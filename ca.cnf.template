@@ -1,0 +1,95 @@
+# configuration template for ca-*
+
+
+# DNPOLICY should be define here with a default value,
+# and then may be replaced by the environment variables.
+DNPOLICY	= policy_anything
+
+[ ca ]
+default_ca	= CA_default		# The default ca section
+
+####################################################################
+[ CA_default ]
+
+# ca-* will switch to CADIR and then use ./ca.cnf,
+# so it must be "."
+dir		= .
+database	= $dir/index.txt	# database index file.
+unique_subject	= no			# It should be "no" for renewing certificates.
+
+new_certs_dir	= $dir/newcerts		# default place for new certs.
+
+serial		= $dir/serial 		# The current serial number
+
+certificate	= $dir/ca.crt		# The CA certificate
+private_key	= $dir/private/ca.key	# The private key
+RANDFILE	= $dir/private/.rand	# private random number file
+
+crlnumber	= $dir/crlnumber	# the current crl number
+crl_extensions	= crl_ext		# Extensions to add to a CRL.
+default_crl_days= 30			# how long before next CRL
+
+default_days	= 365			# how long to certify for
+
+# XXX: Don't use SHA-1 anymore since 2016, use SHA-2 (e.g. sha256) instead.
+default_md	= sha256
+
+
+preserve	= no			# keep passed DN ordering
+
+# Extension copying option: use with caution.
+copy_extensions	= copy	# for subjectAltName in the CSR
+
+# Comment out the following two lines for the "traditional"
+# (and highly broken) format.
+name_opt 	= ca_default		# Subject Name options
+cert_opt 	= ca_default		# Certificate field options
+
+# A few difference way of specifying how similar the request should look
+# For type CA, the listed attributes must be the same, and the optional
+# and supplied fields are just that :-)
+policy		= $ENV::DNPOLICY
+
+# For the CA policy
+# XXX: The field missed in the CA certificate CAN'T be set "match" here!
+[ policy_match ]
+countryName		= optional
+stateOrProvinceName	= optional
+organizationName	= match
+organizationalUnitName	= optional
+commonName		= supplied
+emailAddress		= optional
+
+# For the 'anything' policy
+# At this point in time, you must list all acceptable 'object'
+# types.
+[ policy_anything ]
+countryName		= optional
+stateOrProvinceName	= optional
+localityName		= optional
+organizationName	= optional
+organizationalUnitName	= optional
+commonName		= supplied
+emailAddress		= optional
+
+[ v3_ca ]
+# The pathlen parameter indicates the maximum number of CAs that can appear below this one in a chain.
+# So if you have a CA with a pathlen of zero it can only be used to sign end user certificates and not further CAs.
+#basicConstraints	= critical, CA:TRUE, pathlen:0
+basicConstraints	= critical, CA:TRUE
+
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always,issuer
+keyUsage		= critical, cRLSign, keyCertSign
+#crlDistributionPoints	= URI:http://crl.example/rootca.crl
+
+[ v3_server ]
+basicConstraints	= critical, CA:FALSE
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid,issuer:always
+keyUsage		= critical, digitalSignature, keyEncipherment
+extendedKeyUsage	= serverAuth, clientAuth
+#crlDistributionPoints	= URI:http://crl.example/ca.crl
+
+[ crl_ext ]
+authorityKeyIdentifier	= keyid:always

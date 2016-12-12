@@ -1,0 +1,13 @@
+*.key
+*.csr
+*.crl
+*.cer
+*.der
+*.pem
+*.rnd
+*.old
+*.attr
+index.txt
+serial
+crlnumber
+ca.cnf

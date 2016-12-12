@@ -1,0 +1,96 @@
+Hello My Cert
+-------------
+
+Just some scripts that use 'openssl' to request/sign certificates
+with fewer options and more suitable configuration.
+
+When to use?
+------------
+
+* Just need a certificate which will be signed by a CA or is self-signed.
+
+* Sign/revoke certificates as a CA administrator.
+
+Requirements
+------------
+
+* openssl
+
+* The scripts, "req.cnf", "ca.cnf.template" should be in the same directory,
+  and scripts should be run in the directory.
+
+Just need a certificate
+-----------------------
+
+Only use 'req.sh'.
+What it does is:
+1. To generate a private key first or use an exist key.
+2. Then to generate a cetificate request or a self-signed certificate,
+   depending on the options.
+
+Example:
+
+* Generate a server ceriticate request:
+    $ ./req.sh -server
+
+* Generate a self-signed CA ceriticate (used for a Root CA):
+    $ ./req.sh -ca -selfsign
+
+Running 'req.sh' without arguments will show its all options.
+
+As a CA administrator
+---------------------
+
+Must use 'ca-initdir' first to create an initial database
+in a directory which all related files exclude the scripts should be in,
+for signing/revoking certificates.
+
+Example:
+
+* Create a initial database in /tmp/myca: 
+    $ ./ca-initdir .sh/tmp/myca
+
+  and then the structure of /tmp/myca looks like:
+
+    /tmp/myca
+    |-- ca.cnf
+    |-- crlnumber
+    |-- index.txt
+    |-- newcerts/
+    |-- private/
+    `-- serial
+
+  Then copy the CA's key and certificate to
+  /tmp/myca/private/ca.key and /tmp/myca/ca.crt
+  (or other paths matching the "private_key" and "certificate" fileds
+  in /tmp/myca/ca.cnf if /tmp/myca/ca.cnf is customized) for
+  other scripts to work with them.
+
+* Use the CA in /tmp/myca to sign a server certificate request:
+    $ ./ca-signcert.sh /tmp/myca ~/alice.csr -server
+
+  The new certificate will be in /tmp/myca/newcerts/ if /tmp/myca/ca.cnf keeps default.
+
+* Use the CA in /tmp/myca to sign a CA certificate request and certify it for 10 years:
+    $ ./ca-signcert.sh /tmp/myca ~/subca.csr -ca 3650
+
+* Revoke a certificate signed by the CA in /tmp/myca:
+    $ ./ca-revoke.sh /tmp/myca /etc/ssl/certs/old.crt
+
+* Generate a CRL based on information in /tmp/myca/index.txt
+    $ ./ca-gencrl.sh /tmp/myca
+
+Running them without arguments will show their all options.
+
+References
+----------
+
+Manpages:
+
+* req(1)
+
+* ca(1)
+
+* x509v3_config(5)
+
+

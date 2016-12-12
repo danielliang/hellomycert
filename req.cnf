@@ -1,0 +1,98 @@
+# configuration for req.sh
+
+# FPREFIX and X509V3SAN should be define here with blank,
+# and then must be replace by the environment variables set through req.sh.
+FPREFIX		=
+X509V3SAN	=
+
+####################################################################
+[ req ]
+distinguished_name	= req_distinguished_name
+string_mask		= utf8only
+RANDFILE		= .rnd
+
+# XXX: Don't use SHA-1 anymore since 2016, use SHA-2 (e.g. sha256) instead.
+default_md		= sha256
+
+####################################################################
+[ req_distinguished_name ]
+countryName			= Country Name (2 letter code)
+countryName_default		=
+countryName_min			= 2
+countryName_max			= 2
+
+stateOrProvinceName		= State or Province Name (full name)
+stateOrProvinceName_default	=
+
+localityName			= Locality Name (eg, city)
+localityName_default		=
+
+0.organizationName		= Organization Name (eg, company)
+0.organizationName_default	=
+
+organizationalUnitName		= Organizational Unit Name (eg, section)
+#organizationalUnitName_default	=
+
+commonName			= Common Name (e.g. server FQDN or YOUR name)
+commonName_default              = $ENV::FPREFIX	# the same with your first input when using req.sh
+commonName_max			= 64
+
+emailAddress			= Email Address
+emailAddress_max		= 64
+
+emailAddress_default            =
+
+####################################################################
+# Extensions in CSR exclude SAN should be ignore by CA for security.
+# These values in CSR are just for the record.
+[ v3_req_server ]
+subjectAltName		= $ENV::X509V3SAN
+keyUsage		= critical, digitalSignature, keyEncipherment
+extendedKeyUsage	= serverAuth,clientAuth
+
+[ v3_req_server_nosan ]
+keyUsage		= critical, digitalSignature, keyEncipherment
+extendedKeyUsage	= serverAuth,clientAuth
+
+[ v3_req_ca ]
+basicConstraintsi	= critical,CA:TRUE
+keyUsage		= critical, cRLSign, keyCertSign
+
+####################################################################
+# Extensions in CSR exclude SAN should be ignore by CA for security.
+# These values in CSR are just for the record.
+[ v3_ca_req ]
+basicConstraintsi	= critical,CA:TRUE
+keyUsage		= critical, cRLSign, keyCertSign
+
+[ v3_server_req ]
+subjectAltName		= $ENV::X509V3SAN
+keyUsage		= critical, digitalSignature, keyEncipherment
+extendedKeyUsage	= serverAuth,clientAuth
+
+[ v3_server_nosan_req ]
+keyUsage		= critical, digitalSignature, keyEncipherment
+extendedKeyUsage	= serverAuth,clientAuth
+
+####################################################################
+# For self-signed certificates
+[ v3_ca ]
+basicConstraints	= critical, CA:TRUE
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always,issuer
+keyUsage		= critical, cRLSign, keyCertSign
+
+[ v3_server ]
+subjectAltName		= $ENV::X509V3SAN
+basicConstraints	= critical, CA:FALSE
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid,issuer:always
+keyUsage		= critical, digitalSignature, keyEncipherment
+extendedKeyUsage	= serverAuth, clientAuth
+
+[ v3_server_nosan ]
+basicConstraints	= critical, CA:FALSE
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid,issuer:always
+keyUsage		= critical, digitalSignature, keyEncipherment
+extendedKeyUsage	= serverAuth, clientAuth
