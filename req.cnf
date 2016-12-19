@@ -62,7 +62,7 @@ keyUsage		= critical, cRLSign, keyCertSign
 # Extensions in CSR exclude SAN should be ignore by CA for security.
 # These values in CSR are just for the record.
 [ v3_ca_req ]
-basicConstraintsi	= critical,CA:TRUE
+basicConstraints	= critical,CA:TRUE
 keyUsage		= critical, cRLSign, keyCertSign
 
 [ v3_server_req ]
