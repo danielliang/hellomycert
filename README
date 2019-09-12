@@ -48,7 +48,7 @@ for signing/revoking certificates.
 Example:
 
 * Create a initial database in /tmp/myca: 
-    $ ./ca-initdir .sh/tmp/myca
+    $ ./ca-initdir.sh /tmp/myca
 
   and then the structure of /tmp/myca looks like:
 
