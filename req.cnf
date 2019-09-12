@@ -45,22 +45,6 @@ emailAddress_default            =
 ####################################################################
 # Extensions in CSR exclude SAN should be ignore by CA for security.
 # These values in CSR are just for the record.
-[ v3_req_server ]
-subjectAltName		= $ENV::X509V3SAN
-keyUsage		= critical, digitalSignature, keyEncipherment
-extendedKeyUsage	= serverAuth,clientAuth
-
-[ v3_req_server_nosan ]
-keyUsage		= critical, digitalSignature, keyEncipherment
-extendedKeyUsage	= serverAuth,clientAuth
-
-[ v3_req_ca ]
-basicConstraintsi	= critical,CA:TRUE
-keyUsage		= critical, cRLSign, keyCertSign
-
-####################################################################
-# Extensions in CSR exclude SAN should be ignore by CA for security.
-# These values in CSR are just for the record.
 [ v3_ca_req ]
 basicConstraints	= critical,CA:TRUE
 keyUsage		= critical, cRLSign, keyCertSign
