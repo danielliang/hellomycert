@@ -37,6 +37,7 @@ fi
 
 REALPATH="readlink -f"	# some old linux distributions without realpath by default
 SERVEREXTS="v3_server"
+SERVEREXTS_NEWSAN="v3_server_newsan"
 CAEXTS="v3_ca"
 DNPOLICY="policy_anything"
 
@@ -84,6 +85,24 @@ if [ "x${DAYSOPT}" = "x" ]; then
 		DAYSOPT="-days $DAYSOPT"
 	fi
 fi
+
+# If it's for server, ask for SAN.
+if [ "${EXTS}" = "${SERVEREXTS}" ]; then
+	read -p "Overwrite SAN of the CSR? [y/N]" NEWSAN
+	case $NEWSAN in
+		Y|y)
+			read -p "Subject Alternative Name: (Format example: IP:1.1.1.1,DNS:aa.com,DNS:www.aa.com): " X509V3SAN
+
+			if [ "x${X509V3SAN}" != "x" ]; then
+ 				EXTS="$SERVEREXTS_NEWSAN"
+				export X509V3SAN
+			fi
+			;;
+		*)
+			;;
+	esac
+fi
+
 
 eval openssl ca -extensions $EXTS -in $CSRFILE -policy $DNPOLICY $DAYSOPT || exit 1
 

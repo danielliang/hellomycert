@@ -1,5 +1,8 @@
 # configuration template for ca-*
 
+# X509V3SAN should be define here with blank,
+# and then must be replace by the environment variables set through ca-signcert.sh
+X509V3SAN	=
 
 # DNPOLICY should be define here with a default value,
 # and then may be replaced by the environment variables.
@@ -84,6 +87,15 @@ keyUsage		= critical, cRLSign, keyCertSign
 #crlDistributionPoints	= URI:http://crl.example/rootca.crl
 
 [ v3_server ]
+basicConstraints	= critical, CA:FALSE
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid,issuer:always
+keyUsage		= critical, digitalSignature, keyEncipherment
+extendedKeyUsage	= serverAuth, clientAuth
+#crlDistributionPoints	= URI:http://crl.example/ca.crl
+
+[ v3_server_newsan ]
+subjectAltName		= $ENV::X509V3SAN
 basicConstraints	= critical, CA:FALSE
 subjectKeyIdentifier	= hash
 authorityKeyIdentifier	= keyid,issuer:always
